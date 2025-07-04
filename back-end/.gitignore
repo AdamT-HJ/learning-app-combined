@@ -1,0 +1,23 @@
+
+# Node.js
+node_modules/
+npm-debug.log
+.env
+.DS_Store # macOS specific
+build/
+dist/
+*.env
+*.log
+/coverage
+/.nyc_output
+/client/node_modules # If you have a separate frontend in a 'client' folder
+/frontend/node_modules # Another common frontend folder name
+
+# npm package manager
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
