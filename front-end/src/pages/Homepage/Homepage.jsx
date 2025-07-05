@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './Homepage.module.css';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
 //components
 import DisciplineCards from './components/DisciplineCards.jsx';
@@ -12,8 +12,42 @@ export default function Homepage() {
 
   //fetch once on load - fetch top level subjects (those without a parent_subject_id)
 
+  //fetch function, can trigger with useEffect for on page load OR with a button (refresh maybe?)
+  const getDisciplines = async() => {
+    // reset disciplines
+    setDisciplines([]);
+
+    try{ 
+      const response = await fetch('http://localhost:4000/api/sql/disciplines');
+
+      if(!response.ok){
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const fetchedDisciplines = await response.json();
+
+      if (!fetchedDisciplines || fetchedDisciplines.length === 0) {
+        console.warn("No Disciplines returned from the backend or the array is empty y'arrgh 🏴‍☠️", error);
+        setDisciplines([]);
+        return;
+      }
+
+      // update disciplines useState
+      setDisciplines(fetchedDisciplines);
+
+    } catch (error) {
+      console.error("Failed execute getDisciplines fetch request", error);
+    }
+  };
+
+  //useEffect to trigger on load
+  useEffect(() => {
+    getDisciplines();
+  }, []);
   // function to map 'discipline cards'
 
+  console.log('This is the current "disciplines" state', disciplines);
 
   return (
     <>
@@ -48,12 +82,24 @@ export default function Homepage() {
         pass the discipline names and description to disciplinecards */}
         {/* insert cards components here for 'top level subjects'*/}
         <div className={styles.disciplinesContainer}>
-          {disciplines.length > 0 ? disciplines.map(<DisciplineCards/>):console.log('Error mapping disciplines array')}
+            {disciplines.length > 0 ? 
+            
+            disciplines.map((discipline) =>(
+              <DisciplineCards 
+                key={discipline.id}
+                name={discipline.name}
+                description={discipline.description}
+              
+              />
+            )): (
+                <p>Looks like you don't have any disciplines setup yet. Let's get studying!</p>
+              )
+            }
           
           
 
         </div>
-
+        
 
         </main>
 
